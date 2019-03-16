@@ -140,12 +140,25 @@ b = threading.Thread(name='ObjectTracker', target=ObjectTrack.detectObject)
 
 f = threading.Thread(name='SocketServer', target=ser)
 b.start()
-sleep(10)
+#sleep(10)
 f.start()
 
 
 while 1:
-    print(ObjectTrack.getPosition())
+    n = ObjectTrack.getPosition()
+    if n == -1:
+        print( " %s N/a"%str(n))
+
+    if n in range(0,259):
+        print( " %s is in the Left"%str(n))
+
+    if n in range(260,370):
+        print( " %s is in the Middle"%str(n))
+
+    if n in range(371,637):
+        print( " %s is in the Right"%str(n))
+
+   
 
 
 
