@@ -63,21 +63,21 @@ class OCVObject:
             #v3_max = 255
 
             #logitec cam
-            #v1_min = 24
-            #v2_min = 34
-            #v3_min = 42
-            #v1_max = 60
-            #v2_max = 115
-            #v3_max = 248
+            v1_min = 24
+            v2_min = 34
+            v3_min = 42
+            v1_max = 60
+            v2_max = 115
+            v3_max = 248
 
             
             #logitec cam
-            v1_min = 36
-            v2_min = 56
-            v3_min = 167
-            v1_max = 92
-            v2_max = 89
-            v3_max = 255
+            #v1_min = 36
+            #v2_min = 56
+            #v3_min = 167
+            #v1_max = 92
+            #v2_max = 89
+            #v3_max = 255
             
             thresh = cv2.inRange(frame_to_thresh, (v1_min, v2_min, v3_min), (v1_max, v2_max, v3_max))
 

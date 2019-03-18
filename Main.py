@@ -139,7 +139,7 @@ b = threading.Thread(name='ObjectTracker', target=ObjectTrack.detectObject)
 
 
 f = threading.Thread(name='SocketServer', target=ser)
-#b.start()
+b.start()
 
 #f.start()
 
@@ -180,7 +180,7 @@ _presitionForward = 40
 _presitionBack = -40
 
 
-while False:
+while True:
     n = ObjectTrack.getPosition()
     if n == -1:
         backwardLeft(_presitionBack)
@@ -201,7 +201,7 @@ while False:
 
    
 
-_TestMotor = True
+_TestMotor = False
 
 if _TestMotor == True:
     MotorA.drive(-100)
