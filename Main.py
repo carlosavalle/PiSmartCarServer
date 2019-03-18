@@ -136,30 +136,89 @@ def ser():
 
 ObjectTrack  = OCVObject()
 b = threading.Thread(name='ObjectTracker', target=ObjectTrack.detectObject)
-#ObjectTrack.detectObject()
+
 
 f = threading.Thread(name='SocketServer', target=ser)
-b.start()
-#sleep(10)
-f.start()
+#b.start()
+
+#f.start()
 
 
-while 1:
+
+
+def forward(speed):
+   # print("forward")
+    MotorA.drive(0)
+    MotorB.drive(speed)
+
+def forwardLeft(speed):
+    #print("forwardLeft")
+    MotorA.drive(-100)
+    MotorB.drive(speed)
+
+def forwardRight(speed):
+    #print("forwardRight")
+    MotorA.drive(100)
+    MotorB.drive(speed)
+
+def backward(speed):
+    #print("backward")
+    MotorA.drive(0)
+    MotorB.drive(speed)
+
+def backwardRight(speed):
+    #print("backwardRight")
+    MotorA.drive(-100)
+    MotorB.drive(speed)
+
+def backwardLeft(speed):
+    #print("backwardLeft")
+    MotorA.drive(100)
+    MotorB.drive(speed)
+
+_presitionForward = 40
+_presitionBack = -40
+
+
+while False:
     n = ObjectTrack.getPosition()
     if n == -1:
-        print( " %s N/a"%str(n))
+        backwardLeft(_presitionBack)
+       # print( " %s N/a"%str(n))
+
 
     if n in range(0,259):
-        print( " %s is in the Left"%str(n))
+        backwardRight(_presitionBack)
+        #print( " %s is in the Left"%str(n))
 
     if n in range(260,370):
-        print( " %s is in the Middle"%str(n))
+        forward(_presitionForward)
+        #print( " %s is in the Middle"%str(n))
 
     if n in range(371,637):
-        print( " %s is in the Right"%str(n))
+        backwardLeft(_presitionBack)
+        #print( " %s is in the Right"%str(n))
 
    
 
+_TestMotor = True
+
+if _TestMotor == True:
+    MotorA.drive(-100)
+    sleep(0.5)
+    MotorA.drive(0)
+    sleep(0.5)
+    MotorA.drive(100)
+    sleep(0.5)
+    MotorA.drive(0)
+    sleep(0.5)
+    MotorB.drive(0)
+    sleep(0.5)
+    MotorB.drive(50)
+    sleep(0.5)
+    MotorB.drive(0)
+    sleep(0.5)
+    MotorB.drive(-50)
 
 
 

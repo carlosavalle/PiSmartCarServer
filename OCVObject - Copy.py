@@ -9,7 +9,6 @@ import threading
 
 class OCVObject:
     _position = 0
-    _radius=0
     
    # def __init__(self):
        # self.main()
@@ -48,8 +47,9 @@ class OCVObject:
 
             ret, image = camera.read()
             #image = cv2.flip(image,1)
-
-            frame_to_thresh = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+            
+            frame_to_thresh = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            #frame_to_thresh = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
             #v1_min, v2_min, v3_min, v1_max, v2_max, v3_max = get_trackbar_values(range_filter)
             v1_min, v2_min, v3_min, v1_max, v2_max, v3_max = self.gettrackbarvalues(range_filter)
@@ -63,21 +63,12 @@ class OCVObject:
             #v3_max = 255
 
             #logitec cam
-            #v1_min = 24
-            #v2_min = 34
-            #v3_min = 42
-            #v1_max = 60
-            #v2_max = 115
-            #v3_max = 248
-
-            
-            #logitec cam
-            v1_min = 36
-            v2_min = 56
-            v3_min = 167
-            v1_max = 92
-            v2_max = 89
-            v3_max = 255
+            v1_min = 24
+            v2_min = 34
+            v3_min = 42
+            v1_max = 60
+            v2_max = 115
+            v3_max = 248
             
             thresh = cv2.inRange(frame_to_thresh, (v1_min, v2_min, v3_min), (v1_max, v2_max, v3_max))
 
@@ -96,19 +87,18 @@ class OCVObject:
                 # it to compute the minimum enclosing circle and
                 # centroid
                 c = max(cnts, key=cv2.contourArea)
-                ((x, y), self._radius) = cv2.minEnclosingCircle(c)
+                ((x, y), radius) = cv2.minEnclosingCircle(c)
                 M = cv2.moments(c)
                 center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
             
                 # only proceed if the radius meets a minimum size
-               # print(self._radius)
-                if self._radius > 10:
+                if radius > 10:
                     #print(center[0])
                     self._position = center[0]
                    
                     # draw the circle and centroid on the frame,
                     # then update the list of tracked points
-                    cv2.circle(image, (int(x), int(y)), int(self._radius),(0, 255, 255), 2)
+                    cv2.circle(image, (int(x), int(y)), int(radius),(0, 255, 255), 2)
                     cv2.circle(image, center, 3, (0, 0, 255), -1)
                     cv2.putText(image,"centroid", (center[0]+10,center[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.4,(0, 0, 255),1)
                     cv2.putText(image,"("+str(center[0])+","+str(center[1])+")", (center[0]+10,center[1]+15), cv2.FONT_HERSHEY_SIMPLEX, 0.4,(0, 0, 255),1)
@@ -117,13 +107,10 @@ class OCVObject:
  
             # show the frame to our screen
             cv2.imshow("Original", image)
-          #  cv2.imshow("Thresh", thresh)
-          #  cv2.imshow("Mask", mask)
+           # cv2.imshow("Thresh", thresh)
+            #cv2.imshow("Mask", mask)
 
             if cv2.waitKey(1) & 0xFF is ord('q'):
                 break
     def getPosition(self):
         return self._position
-
-    def getRadius(self):
-        return self._radius
