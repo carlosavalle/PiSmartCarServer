@@ -10,9 +10,9 @@ import threading
 
 #Socket Server
 #Ser = SocketServer2("192.168.43.201",888)
-Ser = SocketServer2("192.168.111.10",888)
+#Ser = SocketServer2("192.168.111.10",888)
 #Ser = SocketServer2("172.0.0.1",888)
-Ss=Ser.Connect2()
+#Ss=Ser.Connect2()
 
 
 #Start Motors
@@ -59,7 +59,7 @@ def backwardLeft(speed):
 def ser():
     print ('Socket is now listening')
    # print(ObjectTrack.getPosition())
-    while 1:
+    while False:
         conn, addr = Ss.accept()
         # print ('Connect with ' + addr[0] + ':' + str(addr[1]))
         buf = conn.recv(5)
@@ -179,8 +179,10 @@ def backwardLeft(speed):
 _presitionForward = 40
 _presitionBack = -40
 
-
 while True:
+    print(ObjectTrack.getPosition())
+
+while False:
     n = ObjectTrack.getPosition()
     if n == -1:
         backwardLeft(_presitionBack)
