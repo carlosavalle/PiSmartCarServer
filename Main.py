@@ -179,8 +179,7 @@ def backwardLeft(speed):
 _presitionForward = 50
 _presitionBack = -50
 
-while True:
-   
+while True:   
    print(ObjectTrack.getPosition())  
    
    
