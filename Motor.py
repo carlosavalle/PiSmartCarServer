@@ -36,7 +36,7 @@ class Motor:
         #If necessary use reverse parameter in constructor
         
         
-        print (speed)
+        #print (speed)
 
         dutyCycle = speed
         if(speed < 0):

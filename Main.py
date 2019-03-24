@@ -10,16 +10,16 @@ import threading
 
 #Socket Server
 #Ser = SocketServer2("192.168.43.201",888)
-Ser = SocketServer2("192.168.111.10",888)
+#Ser = SocketServer2("192.168.111.10",888)
 #Ser = SocketServer2("172.0.0.1",888)
-Ss=Ser.Connect2()
+#Ss=Ser.Connect2()
 
 
 #Start Motors
 
 #Motor(IN1,IN2,PWM,STANDBY,(Reverse polarity?))
-MotorB = Motor(24,23,18,25,False) #for Motor B 
-MotorA = Motor(22,27,17,25,False) #For Motor A
+MotorB = Motor(22,27,17,25,False) #for Motor B 
+MotorA = Motor(24,23,18,25,False) #For Motor A
 MotorA.standby(True)
 MotorB.standby(True)
 
@@ -59,7 +59,7 @@ def backwardLeft(speed):
 def ser():
     print ('Socket is now listening')
    # print(ObjectTrack.getPosition())
-    while 1:
+    while False:
         conn, addr = Ss.accept()
         # print ('Connect with ' + addr[0] + ':' + str(addr[1]))
         buf = conn.recv(5)
@@ -176,27 +176,35 @@ def backwardLeft(speed):
     MotorA.drive(100)
     MotorB.drive(speed)
 
-_presitionForward = 40
-_presitionBack = -40
-
+_presitionForward = 50
+_presitionBack = -50
 
 while True:
+   
+   print(ObjectTrack.getPosition())  
+   
+   
+
+while True:
+    print(ObjectTrack.getPosition())
     n = ObjectTrack.getPosition()
+    if n == -2:
+        forward(0)
     if n == -1:
-        backwardLeft(_presitionBack)
+       forward(0)
        # print( " %s N/a"%str(n))
 
 
-    if n in range(0,259):
-        backwardRight(_presitionBack)
+    if n in range(1,125):  #1,160
+        forwardLeft(_presitionForward)
         #print( " %s is in the Left"%str(n))
 
-    if n in range(260,370):
+    if n in range(126,290): #161,490
         forward(_presitionForward)
         #print( " %s is in the Middle"%str(n))
 
-    if n in range(371,637):
-        backwardLeft(_presitionBack)
+    if n in range(291,425): #491,637
+        forwardRight(_presitionForward)
         #print( " %s is in the Right"%str(n))
 
    
@@ -214,15 +222,13 @@ if _TestMotor == True:
     sleep(0.5)
     MotorB.drive(0)
     sleep(0.5)
-    MotorB.drive(50)
+    MotorB.drive(_presitionForward)
     sleep(0.5)
     MotorB.drive(0)
     sleep(0.5)
-    MotorB.drive(-50)
-
-
-
-
+    MotorB.drive(_presitionBack)
+    sleep(0.5)
+    MotorB.drive(0)
 
 
 
