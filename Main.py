@@ -22,7 +22,6 @@ from multiprocessing import Process
 #Start Motors
 
 #Motor(IN1,IN2,PWM,STANDBY,(Reverse polarity?))
-
 MotorB = Motor(22,27,17,25,False) #for Motor B 
 MotorA = Motor(24,23,18,25,False) #For Motor A
 MotorA.standby(True)
