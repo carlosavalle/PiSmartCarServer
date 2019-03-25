@@ -19,6 +19,9 @@
     <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="app.py" />
+    <Compile Include="camarausb.py" />
+    <Compile Include="camera.py" />
     <Compile Include="Motor.py" />
     <Compile Include="Main.py" />
     <Compile Include="OCVObject.py">
@@ -30,6 +33,10 @@
     <Folder Include="GPIO\" />
     <Folder Include="GPIO\Motors" />
     <Folder Include="Socket2\" />
+    <Folder Include="templates\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="templates\index.html" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
 </Project>
