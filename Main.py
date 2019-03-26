@@ -22,6 +22,8 @@ from multiprocessing import Process
 #Start Motors
 
 #Motor(IN1,IN2,PWM,STANDBY,(Reverse polarity?))
+
+
 MotorB = Motor(22,27,17,25,False) #for Motor B 
 MotorA = Motor(24,23,18,25,False) #For Motor A
 MotorA.standby(True)
@@ -52,15 +54,6 @@ def video_feed():
     """Video streaming route. Put this in the src attribute of an img tag."""
     return Response(gen(OCVObject()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
-
-
-
-
-
-
-
-
-
 
 
 
@@ -104,73 +97,78 @@ def ser():
     print ('Socket is now listening')
    # print(ObjectTrack.getPosition())
     while True:
-        conn, addr = Ss.accept()
-        # print ('Connect with ' + addr[0] + ':' + str(addr[1]))
-        buf = conn.recv(5)
+        try:
+            conn, addr = Ss.accept()
+            # print ('Connect with ' + addr[0] + ':' + str(addr[1]))
+            buf = conn.recv(5)
     
-        #print (buf.decode()) 
-        x = buf.decode()
+            #print (buf.decode()) 
+            x = buf.decode()
     
-        #middle
-        if (int(x[2:7]) >= -1 and int(x[2:7]) <= 1 and _direction !=0):
-            _direction = 0          
-            MotorA.drive(0)    
-        # Turn Right
-        if (int(x[2:7]) >= 2 and _direction !=2):
-          _direction = 2
-          MotorA.drive(100)    
-        #Turn Left
-        if (int(x[2:7]) <= -2 and _direction !=-2):
-           _direction = -2
-           MotorA.drive(-100)
+            #middle
+            if (int(x[2:7]) >= -1 and int(x[2:7]) <= 1 and _direction !=0):
+                _direction = 0          
+                MotorA.drive(0)  
+                print("stopped")
+            # Turn Right
+            if (int(x[2:7]) >= 2 and _direction !=2):
+              _direction = 2
+              MotorA.drive(100)    
+            #Turn Left
+            if (int(x[2:7]) <= -2 and _direction !=-2):
+               _direction = -2
+               MotorA.drive(-100)
 
-        #forward  
+            #forward  
     
-        if (int(x[0:2]) <= 2 and _forwardBackward !=2):
-           _forwardBackward = 2
-           MotorB.drive(100)
+            if (int(x[0:2]) <= 2 and _forwardBackward !=2):
+               _forwardBackward = 2
+               MotorB.drive(100)
 
-        if (int(x[0:2]) == 3 and _forwardBackward !=3):
-           _forwardBackward = 3
-           MotorB.drive(80)
+            if (int(x[0:2]) == 3 and _forwardBackward !=3):
+               _forwardBackward = 3
+               MotorB.drive(80)
 
-        if (int(x[0:2]) == 4 and _forwardBackward !=4):
-           _forwardBackward = 4
-           MotorB.drive(60)
+            if (int(x[0:2]) == 4 and _forwardBackward !=4):
+               _forwardBackward = 4
+               MotorB.drive(60)
     
-        if (int(x[0:2]) == 5 and _forwardBackward !=5):
-           _forwardBackward = 5
-           MotorB.drive(0)
+            if (int(x[0:2]) == 5 and _forwardBackward !=5):
+               _forwardBackward = 5
+               MotorB.drive(0)
+               print("stopped")
 
-        if (int(x[0:2]) == 6 and _forwardBackward !=6):
-           _forwardBackward = 6
-           MotorB.drive(0)
+            if (int(x[0:2]) == 6 and _forwardBackward !=6):
+               _forwardBackward = 6
+               MotorB.drive(0)
+               print("stopped")
 
-        # backward
-        if (int(x[0:2]) == 7 and _forwardBackward !=7):
-           _forwardBackward = 7
-           MotorB.drive(-60)
+            # backward
+            if (int(x[0:2]) == 7 and _forwardBackward !=7):
+               _forwardBackward = 7
+               MotorB.drive(-60)
 
-        if (int(x[0:2]) == 8 and _forwardBackward !=8):
-           _forwardBackward = 8
-           MotorB.drive(-75)
+            if (int(x[0:2]) == 8 and _forwardBackward !=8):
+               _forwardBackward = 8
+               MotorB.drive(-75)
 
-        if (int(x[0:2]) == 9 and _forwardBackward !=9):
-           _forwardBackward = 9
-           MotorB.drive(-90)
+            if (int(x[0:2]) == 9 and _forwardBackward !=9):
+               _forwardBackward = 9
+               MotorB.drive(-90)
 
-        if (int(x[0:2]) == 10 and _forwardBackward !=10):
-           _forwardBackward = 10
-           MotorB.drive(-100)
-        print(_direction)
+            if (int(x[0:2]) == 10 and _forwardBackward !=10):
+               _forwardBackward = 10
+               MotorB.drive(-100)
+            print(_forwardBackward)
+        except:
+               print("srv error")
+            #MotorB.drive(int(x[0:2]))
 
-        #MotorB.drive(int(x[0:2]))
+           # print ("X " + x[0:2])    
+            #print ("Y " + x[2:7])    
 
-       # print ("X " + x[0:2])    
-        #print ("Y " + x[2:7])    
-
-   # s.close()
-
+       # s.close()
+     
 
 
 #ObjectTrack  = OCVObject()
