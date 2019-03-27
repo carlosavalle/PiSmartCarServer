@@ -29,7 +29,7 @@ MotorA = Motor(24,23,18,25,False) #For Motor A
 MotorA.standby(True)
 MotorB.standby(True)
 
-_presitionForward = 50
+_presitionForward = 80
 _presitionBack = -50
 
 
@@ -59,6 +59,7 @@ def genFollow(pimage):
            
         # print(ObjectTrack.getPosition2())
         n = ObjectTrack.getPosition2()
+        print(n)
         if n == -2:
             forward(0)
         if n == -1:
@@ -101,7 +102,7 @@ def videoFollow_feed():
 
 
 def ser():
-    Ser = SocketServer2("192.168.156.47",888)
+    Ser = SocketServer2("192.168.153.142",888)
     #Ser = SocketServer2("192.168.111.10",888)
     #Ser = SocketServer2("172.0.0.1",888)
     Ss=Ser.Connect2()
