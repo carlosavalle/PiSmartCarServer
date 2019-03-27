@@ -29,7 +29,8 @@ MotorA = Motor(24,23,18,25,False) #For Motor A
 MotorA.standby(True)
 MotorB.standby(True)
 
-
+_presitionForward = 50
+_presitionBack = -50
 
 
 app = Flask(__name__)
@@ -47,6 +48,13 @@ def gen(camera):
         frame = camera.get_frame()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+def genFollow(camera):
+    """Video streaming generator function."""
+   
+    while True:
+        frame = camera.get_frameFollow()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 
 @app.route('/video_feed')
@@ -55,37 +63,14 @@ def video_feed():
     return Response(gen(OCVObject()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
+@app.route('/video_follow')
+def videoFollow_feed():
+    """Video streaming route. Put this in the src attribute of an img tag."""
+    return Response(genFollow(OCVObject()),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
-def forward(speed):
-    print("forward")
-    MotorA.drive(0)
-    MotorB.drive(speed)
 
-def forwardLeft(speed):
-    print("forwardLeft")
-    MotorA.drive(-100)
-    MotorB.drive(speed)
-
-def forwardRight(speed):
-    print("forwardRight")
-    MotorA.drive(100)
-    MotorB.drive(speed)
-
-def backward(speed):
-    print("backward")
-    MotorA.drive(0)
-    MotorB.drive(speed)
-
-def backwardRight(speed):
-    print("backwardRight")
-    MotorA.drive(-100)
-    MotorB.drive(speed)
-
-def backwardLeft(speed):
-    print("backwardLeft")
-    MotorA.drive(100)
-    MotorB.drive(speed)
 
 def ser():
     Ser = SocketServer2("192.168.156.47",888)
@@ -96,6 +81,7 @@ def ser():
     _forwardBackward = 0
     print ('Socket is now listening')
    # print(ObjectTrack.getPosition())
+    _followObj =None
     while True:
         try:
             conn, addr = Ss.accept()
@@ -109,7 +95,6 @@ def ser():
             if (int(x[2:7]) >= -1 and int(x[2:7]) <= 1 and _direction !=0):
                 _direction = 0          
                 MotorA.drive(0)  
-                print("stopped")
             # Turn Right
             if (int(x[2:7]) >= 2 and _direction !=2):
               _direction = 2
@@ -136,12 +121,11 @@ def ser():
             if (int(x[0:2]) == 5 and _forwardBackward !=5):
                _forwardBackward = 5
                MotorB.drive(0)
-               print("stopped")
 
             if (int(x[0:2]) == 6 and _forwardBackward !=6):
                _forwardBackward = 6
                MotorB.drive(0)
-               print("stopped")
+          
 
             # backward
             if (int(x[0:2]) == 7 and _forwardBackward !=7):
@@ -159,9 +143,23 @@ def ser():
             if (int(x[0:2]) == 10 and _forwardBackward !=10):
                _forwardBackward = 10
                MotorB.drive(-100)
-            print(_forwardBackward)
-        except:
-               print("srv error")
+            
+            #from follow it
+            if (int(x[0:2]) ==  51):
+                print("Open Follow It")
+                _followObj = threading.Thread(name='FollowObject', target=FollowObject)
+                _followObj.start()
+            if (int(x[0:2]) ==  50):
+                print("Close Follow It")
+                _followObj.do_run = False
+                _followObj.join()
+  
+
+
+           
+        except Exception as e: 
+            print(e)
+             
             #MotorB.drive(int(x[0:2]))
 
            # print ("X " + x[0:2])    
@@ -169,10 +167,67 @@ def ser():
 
        # s.close()
      
+def forward(speed):
+   # print("forward")
+    MotorA.drive(0)
+    MotorB.drive(speed)
+
+def forwardLeft(speed):
+    #print("forwardLeft")
+    MotorA.drive(-100)
+    MotorB.drive(speed)
+
+def forwardRight(speed):
+    #print("forwardRight")
+    MotorA.drive(100)
+    MotorB.drive(speed)
+
+def backward(speed):
+    #print("backward")
+    MotorA.drive(0)
+    MotorB.drive(speed)
+
+def backwardRight(speed):
+    #print("backwardRight")
+    MotorA.drive(-100)
+    MotorB.drive(speed)
+
+def backwardLeft(speed):
+    #print("backwardLeft")
+    MotorA.drive(100)
+    MotorB.drive(speed)
 
 
 #ObjectTrack  = OCVObject()
 #b = None
+
+def FollowObject():
+        t = threading.currentThread()
+        ObjectTrack = OCVObject()
+        print("FollowObject")
+        while getattr(t, "do_run", True):
+    
+           # print(ObjectTrack.getPosition2())
+            n = ObjectTrack.getPosition2()
+            if n == -2:
+                forward(0)
+            if n == -1:
+               forward(0)
+               # print( " %s N/a"%str(n))
+
+
+            if n in range(1,125):  #1,160
+                forwardLeft(_presitionForward)
+                #print( " %s is in the Left"%str(n))
+
+            if n in range(126,290): #161,490
+                forward(_presitionForward)
+                #print( " %s is in the Middle"%str(n))
+
+            if n in range(291,425): #491,637
+                forwardRight(_presitionForward)
+                #print( " %s is in the Right"%str(n))
+
 def test():
    print("hola")
 
@@ -250,63 +305,63 @@ WebCam()
 
 
 
-def forward(speed):
-   # print("forward")
-    MotorA.drive(0)
-    MotorB.drive(speed)
 
-def forwardLeft(speed):
-    #print("forwardLeft")
-    MotorA.drive(-100)
-    MotorB.drive(speed)
 
-def forwardRight(speed):
-    #print("forwardRight")
-    MotorA.drive(100)
-    MotorB.drive(speed)
 
-def backward(speed):
-    #print("backward")
-    MotorA.drive(0)
-    MotorB.drive(speed)
+#   def forward(speed):
+#    print("forward")
+#    MotorA.drive(0)
+#    MotorB.drive(speed)
 
-def backwardRight(speed):
-    #print("backwardRight")
-    MotorA.drive(-100)
-    MotorB.drive(speed)
+#def forwardLeft(speed):
+#    print("forwardLeft")
+#    MotorA.drive(-100)
+#    MotorB.drive(speed)
 
-def backwardLeft(speed):
-    #print("backwardLeft")
-    MotorA.drive(100)
-    MotorB.drive(speed)
+#def forwardRight(speed):
+#    print("forwardRight")
+#    MotorA.drive(100)
+#    MotorB.drive(speed)
 
-_presitionForward = 50
-_presitionBack = -50
+#def backward(speed):
+#    print("backward")
+#    MotorA.drive(0)
+#    MotorB.drive(speed)
+
+#def backwardRight(speed):
+#    print("backwardRight")
+#    MotorA.drive(-100)
+#    MotorB.drive(speed)
+
+#def backwardLeft(speed):
+#    print("backwardLeft")
+#    MotorA.drive(100)
+#    MotorB.drive(speed)
 
 
    
+#def FollowObject():
+#        while False:
+#            print(ObjectTrack.getPosition())
+#            n = ObjectTrack.getPosition()
+#            if n == -2:
+#                forward(0)
+#            if n == -1:
+#               forward(0)
+#               # print( " %s N/a"%str(n))
 
-while False:
-    print(ObjectTrack.getPosition())
-    n = ObjectTrack.getPosition()
-    if n == -2:
-        forward(0)
-    if n == -1:
-       forward(0)
-       # print( " %s N/a"%str(n))
 
+#            if n in range(1,125):  #1,160
+#                forwardLeft(_presitionForward)
+#                #print( " %s is in the Left"%str(n))
 
-    if n in range(1,125):  #1,160
-        forwardLeft(_presitionForward)
-        #print( " %s is in the Left"%str(n))
+#            if n in range(126,290): #161,490
+#                forward(_presitionForward)
+#                #print( " %s is in the Middle"%str(n))
 
-    if n in range(126,290): #161,490
-        forward(_presitionForward)
-        #print( " %s is in the Middle"%str(n))
-
-    if n in range(291,425): #491,637
-        forwardRight(_presitionForward)
-        #print( " %s is in the Right"%str(n))
+#            if n in range(291,425): #491,637
+#                forwardRight(_presitionForward)
+#                #print( " %s is in the Right"%str(n))
 
    
 
