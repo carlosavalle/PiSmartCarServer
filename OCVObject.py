@@ -46,7 +46,7 @@ class OCVObject():
     def getPosition2(self):
 
             ret, image = self.camera.read()
-            
+           
             #image = cv2.flip(image,1)
             hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
           
@@ -94,7 +94,7 @@ class OCVObject():
                 else:
                     self._position = -1
 
-                self._imageFollow = image
+            self._imageFollow = image  
             if self.getRadius() < 28:
                 return self._position
             else:

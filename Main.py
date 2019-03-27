@@ -17,7 +17,7 @@ from multiprocessing import Process
 #Ser = SocketServer2("192.168.111.10",888)
 #Ser = SocketServer2("172.0.0.1",888)
 #Ss=Ser.Connect2()
-
+image = None
 
 #Start Motors
 
@@ -35,26 +35,54 @@ _presitionBack = -50
 
 app = Flask(__name__)
 
+
+
+
 @app.route('/')
 def index():
-    """Video streaming home page."""
+    
     return render_template('index.html')
 
 
 def gen(camera):
-    """Video streaming generator function."""
+ 
    
     while True:
         frame = camera.get_frame()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-def genFollow(camera):
-    """Video streaming generator function."""
-   
+def genFollow(pimage):
+    ObjectTrack = OCVObject()
+    print("FollowObject")
+  
     while True:
-        frame = camera.get_frameFollow()
+           
+        # print(ObjectTrack.getPosition2())
+        n = ObjectTrack.getPosition2()
+        if n == -2:
+            forward(0)
+        if n == -1:
+            forward(0)
+            # print( " %s N/a"%str(n))
+
+
+        if n in range(1,125):  #1,160
+            forwardLeft(_presitionForward)
+            #print( " %s is in the Left"%str(n))
+
+        if n in range(126,290): #161,490
+            forward(_presitionForward)
+            #print( " %s is in the Middle"%str(n))
+
+        if n in range(291,425): #491,637
+            forwardRight(_presitionForward)
+            #print( " %s is in the Right"%str(n))
+        frame =   image = ObjectTrack.get_frameFollow()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+      
+   
+    
 
 
 @app.route('/video_feed')
@@ -66,7 +94,7 @@ def video_feed():
 @app.route('/video_follow')
 def videoFollow_feed():
     """Video streaming route. Put this in the src attribute of an img tag."""
-    return Response(genFollow(OCVObject()),
+    return Response(genFollow(image),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
@@ -143,16 +171,16 @@ def ser():
             if (int(x[0:2]) == 10 and _forwardBackward !=10):
                _forwardBackward = 10
                MotorB.drive(-100)
-            
+            print(int(x[0:2])) 
             #from follow it
-            if (int(x[0:2]) ==  51):
-                print("Open Follow It")
-                _followObj = threading.Thread(name='FollowObject', target=FollowObject)
-                _followObj.start()
-            if (int(x[0:2]) ==  50):
-                print("Close Follow It")
-                _followObj.do_run = False
-                _followObj.join()
+            #if (int(x[0:2]) ==  51):
+            #    print("Open Follow It")
+            #    #_followObj = threading.Thread(name='FollowObject', target=FollowObject)
+            #    #_followObj.start()
+            #if (int(x[0:2]) ==  50):
+            #    print("Close Follow It")
+            #    #_followObj.do_run = False
+            #    #_followObj.join()
   
 
 
@@ -168,32 +196,32 @@ def ser():
        # s.close()
      
 def forward(speed):
-   # print("forward")
+    print("forward")
     MotorA.drive(0)
     MotorB.drive(speed)
 
 def forwardLeft(speed):
-    #print("forwardLeft")
+    print("forwardLeft")
     MotorA.drive(-100)
     MotorB.drive(speed)
 
 def forwardRight(speed):
-    #print("forwardRight")
+    print("forwardRight")
     MotorA.drive(100)
     MotorB.drive(speed)
 
 def backward(speed):
-    #print("backward")
+    print("backward")
     MotorA.drive(0)
     MotorB.drive(speed)
 
 def backwardRight(speed):
-    #print("backwardRight")
+    print("backwardRight")
     MotorA.drive(-100)
     MotorB.drive(speed)
 
 def backwardLeft(speed):
-    #print("backwardLeft")
+    print("backwardLeft")
     MotorA.drive(100)
     MotorB.drive(speed)
 
@@ -205,8 +233,9 @@ def FollowObject():
         t = threading.currentThread()
         ObjectTrack = OCVObject()
         print("FollowObject")
+  
         while getattr(t, "do_run", True):
-    
+           
            # print(ObjectTrack.getPosition2())
             n = ObjectTrack.getPosition2()
             if n == -2:
@@ -227,7 +256,7 @@ def FollowObject():
             if n in range(291,425): #491,637
                 forwardRight(_presitionForward)
                 #print( " %s is in the Right"%str(n))
-
+            image = ObjectTrack.get_frameFollow()
 def test():
    print("hola")
 
@@ -237,7 +266,8 @@ def WebCam():
       print("entro a webcam???")
       #h = threading.Thread(name='ObjectTracker', target=test)
       #h.start()
-
+      
+      # lo pase al servidor web
       s = threading.Thread(name='ObjectTracker', target=ser)
       s.start()
       
