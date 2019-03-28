@@ -1,6 +1,7 @@
 #from Socket2.SocketServer2  import *
 #from GPIO.Motors.Motor import *
 from Motor import *
+from ultrasonic import *
 from OCVObject import *
 from SocketServer2 import *
 from time import sleep
@@ -29,14 +30,16 @@ MotorA = Motor(24,23,18,25,False) #For Motor A
 MotorA.standby(True)
 MotorB.standby(True)
 
-_presitionForward = 50
+_presitionForward = 80
 _presitionBack = -50
 
 
 app = Flask(__name__)
 
 
-
+while False:
+     distance = ultrasonic()
+     print (distance.measureDistance())
 
 @app.route('/')
 def index():
@@ -59,6 +62,7 @@ def genFollow(pimage):
            
         # print(ObjectTrack.getPosition2())
         n = ObjectTrack.getPosition2()
+        print(n)
         if n == -2:
             forward(0)
         if n == -1:
@@ -118,7 +122,6 @@ def ser():
     
             #print (buf.decode()) 
             x = buf.decode()
-    
             #middle
             if (int(x[2:7]) >= -1 and int(x[2:7]) <= 1 and _direction !=0):
                 _direction = 0          
