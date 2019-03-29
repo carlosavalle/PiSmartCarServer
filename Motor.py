@@ -12,9 +12,8 @@ class Motor:
 
     #Defaults
     hertz = 1000
-    reverse = False #Reverse flips the direction of the motor
+    reverse = False 
 
-    #Constructor
     def __init__(self, in1, in2, pwm, standbyPin, reverse):
         self.in1 = in1
         self.in2 = in2
@@ -32,8 +31,6 @@ class Motor:
 
     #Speed from -100 to 100
     def drive(self, speed):
-        #Negative speed for reverse, positive for forward
-        #If necessary use reverse parameter in constructor
         
         
         #print (speed)
