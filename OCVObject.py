@@ -86,6 +86,7 @@ class OCVObject():
                 except:
                     print("center error")
                     self._position = -1
+                    return self._position
                 # only proceed if the radius meets a minimum size
                # print(self._radius)
                 if self._radius > 10:
@@ -96,7 +97,7 @@ class OCVObject():
                     # then update the list of tracked points
                     cv2.circle(image, (int(x), int(y)), int(self._radius),(0, 255, 255), 2)
                     cv2.circle(image, center, 3, (0, 0, 255), -1)
-                    cv2.putText(image,"centroid", (center[0]+10,center[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.4,(0, 0, 255),1)
+                    cv2.putText(image,"Ball", (center[0]+10,center[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.4,(0, 0, 255),1)
                     cv2.putText(image,"("+str(center[0])+","+str(center[1])+")", (center[0]+10,center[1]+15), cv2.FONT_HERSHEY_SIMPLEX, 0.4,(0, 0, 255),1)
                 else:
                     self._position = -1
@@ -175,7 +176,7 @@ class OCVObject():
     #            break
     
     def getPosition(self):
-        if self.getRadius() < 28:
+        if self.getRadius() < 38:
            return self._position
         else:
             return -2

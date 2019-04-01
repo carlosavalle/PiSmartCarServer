@@ -17,7 +17,7 @@ from multiprocessing import Process
 
 image = None
  
-sensor = DistanceSensor(echo=20, trigger=21, queue_len=1)
+#sensor = DistanceSensor(echo=20, trigger=21, queue_len=1,partial=true)
 MotorB = Motor(22,27,17,25,False) #for Motor B 
 MotorA = Motor(24,23,18,25,False) #For Motor A
 MotorA.standby(True)
@@ -100,6 +100,7 @@ def videoFollow_feed():
 
 
 def ser():
+    #sensor = DistanceSensor(echo=20, trigger=21, queue_len=1, partial=true, max_distance =3)
     Ser = SocketServer2("192.168.43.201",888)
    # Ser = SocketServer2("192.168.111.10",888)
     #Ser = SocketServer2("172.0.0.1",888)
@@ -120,30 +121,59 @@ def ser():
            
             #print (buf.decode()) 
             x = buf.decode()
-            if (int(x[5:9]) ==1):
-                print("entro")
-                _distance = (sensor.distance * 100)
+            #if (int(x[5:9]) ==1):
+            #    print("entro")
+            #    _distance = (sensor.distance * 100)
                
                 #sleep(0.3)
-                print(_distance)
-            #middle
-            if (int(x[2:5]) >= -1 and int(x[2:5]) <= 1 and _direction !=0):
-                _direction = 0          
-                MotorA.drive(0)  
-            # Turn Right
-            if (int(x[2:5]) >= 2 and _direction !=2):
-                _direction = 2
-                MotorA.drive(100)    
-            #Turn Left
-            if (int(x[2:5]) <= -2 and _direction !=-2):
-                _direction = -2
-                MotorA.drive(-100)
-           # d = distance.measureDistance()
-            if (int(x[5:9]) ==1 and  _distance < 50):
+              #  print(_distance)
+        
+          
+            #if (int(x[5:9]) ==1 and  (sensor.distance * 100) < 50):
+            if (int(x[5:9]) ==1 ):
                 print("Faced ")
-                MotorB.drive(-100)
+                MotorB.drive(0)
+                MotorA.drive(0)
+                 # backward
+                if (int(x[0:2]) == 7 and _forwardBackward !=7):
+                    _forwardBackward = 7
+                    MotorB.drive(-60)
+
+                if (int(x[0:2]) == 8 and _forwardBackward !=8):
+                    _forwardBackward = 8
+                    MotorB.drive(-75)
+
+                if (int(x[0:2]) == 9 and _forwardBackward !=9):
+                    _forwardBackward = 9
+                    MotorB.drive(-90)
+
+                if (int(x[0:2]) == 10 and _forwardBackward !=10):
+                    _forwardBackward = 10
+                    MotorB.drive(-100)
              
-            else:
+         
+            else:  
+                #middle
+                if (int(x[2:5]) >= -1 and int(x[2:5]) <= 1 and _direction !=0):
+                    _direction = 0          
+                    MotorA.drive(0)  
+                # Turn Right
+                if (int(x[2:5]) >= 2 and _direction !=2):
+                    _direction = 2
+                    MotorA.drive(100)    
+                #Turn Left
+                if (int(x[2:5]) <= -2 and _direction !=-2):
+                    _direction = -2
+                    MotorA.drive(-100)
+               # d = distance.measureDistance()
+          
+             #if (int(x[5:9]) ==1 and  _distance < 50):
+             #       print("Faced ")
+             #       MotorB.drive(-100)
+             
+         
+             #    else:
+
             #forward  
                 if (int(x[0:2]) <= 2 and _forwardBackward !=2):
                     _forwardBackward = 2
@@ -156,6 +186,7 @@ def ser():
                 if (int(x[0:2]) == 4 and _forwardBackward !=4):
                     _forwardBackward = 4
                     MotorB.drive(60)
+                
                 if (int(x[0:2]) == 5 and _forwardBackward !=5):
                     _forwardBackward = 5
                     MotorB.drive(0)
@@ -164,33 +195,25 @@ def ser():
                     _forwardBackward = 6
                     MotorB.drive(0)
           
-    
-            if (int(x[0:2]) == 5 and _forwardBackward !=5):
-                _forwardBackward = 5
-                MotorB.drive(0)
 
-            if (int(x[0:2]) == 6 and _forwardBackward !=6):
-                _forwardBackward = 6
-                MotorB.drive(0)
-          
+                # backward
+                if (int(x[0:2]) == 7 and _forwardBackward !=7):
+                    _forwardBackward = 7
+                    MotorB.drive(-60)
 
-            # backward
-            if (int(x[0:2]) == 7 and _forwardBackward !=7):
-                _forwardBackward = 7
-                MotorB.drive(-60)
+                if (int(x[0:2]) == 8 and _forwardBackward !=8):
+                    _forwardBackward = 8
+                    MotorB.drive(-75)
 
-            if (int(x[0:2]) == 8 and _forwardBackward !=8):
-                _forwardBackward = 8
-                MotorB.drive(-75)
+                if (int(x[0:2]) == 9 and _forwardBackward !=9):
+                    _forwardBackward = 9
+                    MotorB.drive(-90)
 
-            if (int(x[0:2]) == 9 and _forwardBackward !=9):
-                _forwardBackward = 9
-                MotorB.drive(-90)
-
-            if (int(x[0:2]) == 10 and _forwardBackward !=10):
-                _forwardBackward = 10
-                MotorB.drive(-100)
+                if (int(x[0:2]) == 10 and _forwardBackward !=10):
+                    _forwardBackward = 10
+                    MotorB.drive(-100)
             print(int(x[0:2]))
+            print(int(x[2:5]))
             conn.close()
             
         except Exception as e: 
